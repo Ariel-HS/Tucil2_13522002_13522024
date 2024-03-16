@@ -41,7 +41,7 @@ vector <Point> brute_force(int it,vector<Point> &p) { // it = iteration
 
     vector<Point> new_p;
     new_p.push_back(p[0]);
-    for (int i=1;i<it+1;i++){
+    for (int i=1;i<pow(2,it);i++){
         new_p.push_back(f.func(i*steps));
     }
     new_p.push_back(p.back());
