@@ -1,6 +1,9 @@
 #ifndef BEZIER_H_INCLUDED
 #define BEZIER_H_INCLUDED
 
+#include <iostream>
+#include <cmath>
+
 #include <bits/stdc++.h>
 #include <vector>
 using std::vector;
@@ -17,6 +20,7 @@ double combination(double, double);
 struct Persamaan {
     Persamaan(vector <Point> &p);
     Point func(double x);
+    void printInfo();
 
     std::vector <double> coefficients;
     std::vector <Point> points;

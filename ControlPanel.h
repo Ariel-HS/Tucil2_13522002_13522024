@@ -26,7 +26,7 @@ public slots:
     void resetControlPanel(ImageView*);
 
 signals:
-    void applyChanges(int, double, double, int, int);
+    void applyChanges(int, double, double, int, int, int);
     void getCoordinateFromView(int, QPointF*&);
 
 public:
@@ -43,6 +43,8 @@ public:
     QLabel* lpoints;
     QLabel* lnumpoints;
     QLabel* lnumcpoint;
+    QLabel* lcalcmethod;
+    QComboBox* calcMethod;
     QPushButton* butHide;
     QPushButton* butApply;
 

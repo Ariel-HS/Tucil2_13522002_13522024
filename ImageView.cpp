@@ -8,6 +8,7 @@
 #include <QDoubleSpinBox>
 #include <QGraphicsProxyWidget>
 #include "bezier.h"
+#include <QLabel>
 
 
 QPointF ImageView::textLabelLocation(const QPointF& f){
@@ -48,13 +49,100 @@ QString ImageView::coordToStr(const QPointF& f){
     return QString::fromStdString(ans);
 }
 
+QPointF ImageView::getFakeCoord(const QPointF& qp){
+    return QPointF(qp.x() - sceneSize / 2, sceneSize / 2 - qp.y());
+}
+
+QPointF ImageView::getRealCoord(const QPointF& qp){
+    return QPointF(qp.x() + sceneSize / 2, sceneSize / 2 - qp.y());
+}
+
+void ImageView::drawCoordinateLines(){
+    for(int i = 0; i < sceneSize; i += spaceBetweenPoints){
+        QLineF* newL = new QLineF(0, i, sceneSize, i);
+        QLinearGradient gradient;
+        qreal af;
+        if(i == sceneSize / 2){
+            af = 0.4;
+        }else{
+            af = 0.1;
+        }
+        QColor colorBlackTransparent(0, 0, 0);
+        colorBlackTransparent.setAlphaF(af);
+        gradient.setColorAt(0, colorBlackTransparent);
+        gradient.setColorAt(1, colorBlackTransparent);
+        QGraphicsLineItem* l2 = new QGraphicsLineItem(*newL);
+        qreal w;
+        if(i == sceneSize / 2){
+            w = 0.7;
+        }else{
+            w = 0.5;
+        }
+        QPen pen1(QBrush(gradient), w);
+        scene->addItem(l2);
+        l2->setPen(pen1);
+        coordLines.append(l2);
+    }
+    for(int i = 0; i < sceneSize; i += spaceBetweenPoints){
+        QLineF* newL = new QLineF(i, 0, i, sceneSize);
+        QLinearGradient gradient;
+        qreal af;
+        if(i == sceneSize / 2){
+            af = 0.4;
+        }else{
+            af = 0.1;
+        }
+        QColor colorBlackTransparent(0, 0, 0);
+        colorBlackTransparent.setAlphaF(af);
+        gradient.setColorAt(0, colorBlackTransparent);
+        gradient.setColorAt(1, colorBlackTransparent);
+        QGraphicsLineItem* l2 = new QGraphicsLineItem(*newL);
+        qreal w;
+        if(i == sceneSize / 2){
+            w = 0.7;
+        }else{
+            w = 0.5;
+        }
+        QPen pen1(QBrush(gradient), w);
+        scene->addItem(l2);
+        l2->setPen(pen1);
+        coordLines.append(l2);
+    }
+    for(int i = 0; i < sceneSize; i += spaceBetweenPointLabels){
+        QGraphicsTextItem* gqp = new QGraphicsTextItem;
+        gqp->setPlainText(QString::fromStdString(std::to_string(sceneSize / 2 - i)));
+        QFont fontNow;
+        fontNow.setPixelSize(8);
+        gqp->setFont(fontNow);
+        //Here is how to change position:
+        scene->addItem(gqp);
+        gqp->setPos((sceneSize / 2) - 2, i - 2);
+        landmarkCoord.append(gqp);
+    }
+    for(int i = 0; i < sceneSize; i += spaceBetweenPointLabels){
+        QGraphicsTextItem* gqp = new QGraphicsTextItem;
+        gqp->setPlainText(QString::fromStdString(std::to_string(i - sceneSize / 2)));
+        QFont fontNow;
+        fontNow.setPixelSize(8);
+        gqp->setFont(fontNow);
+        //Here is how to change position:
+        scene->addItem(gqp);
+        gqp->setPos(i - 2, (sceneSize / 2) - 2);
+        landmarkCoord.append(gqp);
+    }
+}
+
 ImageView::ImageView(QWidget *parent) : QGraphicsView(parent){
     r = 8;
     interRadius = 3;
     iteration = 1;
+    calcMethod = 0;
     this->scene = new QGraphicsScene;
     this->n_points = 3;
     this->dragged = -1;
+    scene->setSceneRect(0, 0, sceneSize, sceneSize);
+    sceneOffset = QPointF(0, 0);
+    drawCoordinateLines();
     QVector<QColor> list_of_colors = {Qt::red, Qt::green, Qt::red, Qt::magenta, Qt::yellow}; // PANJANG HANYA 5!!!
     hardCodedCoords.append(QPointF(509,31));
     hardCodedCoords.append(QPointF(55,31));
@@ -71,7 +159,7 @@ ImageView::ImageView(QWidget *parent) : QGraphicsView(parent){
     for(int i = 0; i < this->n_points; ++i){
         QGraphicsEllipseItem* p1 = new QGraphicsEllipseItem(0, 0, r, r);
         p1->setPos(hardCodedCoords.at(i));
-        QGraphicsTextItem* coords = new QGraphicsTextItem(coordToStr(p1->scenePos()));
+        QGraphicsTextItem* coords = new QGraphicsTextItem(coordToStr(getFakeCoord(p1->scenePos())));
         coords->setPos(textLabelLocation(p1->scenePos()));
         this->coordLabels.append(coords);
         QFont f("Calibri", 11);
@@ -141,7 +229,11 @@ ImageView::ImageView(QWidget *parent) : QGraphicsView(parent){
         l2->setZValue(0);
         interLines.append(l2);
     }
-    scene->setSceneRect(0, 0, 600, 600);
+    m_originX = 0;
+    m_originY = 0;
+    setTransformationAnchor(QGraphicsView::NoAnchor);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setSceneRect(scene->sceneRect());
     this->setScene(scene);
     this->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
@@ -159,18 +251,37 @@ ImageView::~ImageView(){
         delete listInterPoints.at(i);
         if(i != this->listInterPoints.count() - 1) delete interLines.at(i);
     }
+    for(int i = 0; i < this->landmarkCoord.count(); ++i){
+        delete landmarkCoord.at(i);
+    }
+    for(int i = 0; i < this->coordLines.count(); ++i){
+        delete coordLines.at(i);
+    }
     delete scene;
+}
+
+bool ImageView::contains(QPointF p1, QPointF p2){
+    int x1 = p1.x();
+    int x2 = p1.x() + r;
+    int y1 = p1.y();
+    int y2 = p1.y() + r;
+    return p2.x() <= x2 && p2.x() >= x1 && p2.y() <= y2 && p2.y() >= y1;
 }
 
 void ImageView::mousePressEvent(QMouseEvent *event)
 {
     for(int i = this->n_points - 1; i >= 0; --i){
-        if(listPoints.at(i)->contains(listPoints.at(i)->mapFromScene(event->position()))){
+        if(contains(listPoints.at(i)->pos(), mapToScene(event->pos()))){
             this->dragged = i;
             break;
         }
+        //qDebug() << i << " " << listPoints.at(i)->pos() << " " << mapToScene(event->pos());
     }
-    if(this->dragged == -1) return;
+    //qDebug() << "margin" << m_originX << " " << m_originY;
+    if(this->dragged == -1){
+        this->sceneOffset = event->pos();
+        return;
+    }
     *(this->offsets[this->dragged]) = event->pos();
     emit yellUpdate(this);
 }
@@ -181,11 +292,20 @@ void ImageView::mouseMoveEvent(QMouseEvent *event)
         return;
     }
     if(this->dragged == -1){
+        //qDebug() << "YO";
+        QPointF oldp = sceneOffset;
+        QPointF newP = event->pos();
+        //qDebug() << "Origin" << oldp;
+        //qDebug() << "New" << newP;
+        QPointF translation = newP - oldp;
+        translate(translation.x(), translation.y());
+
+        sceneOffset = event->pos();
         return;
     }
     listPoints.at(this->dragged)->setPos(listPoints.at(this->dragged)->pos() + (event->position() - *(offsets.at(this->dragged))));
     coordLabels.at(this->dragged)->setPos(textLabelLocation(listPoints.at(this->dragged)->pos()));
-    coordLabels.at(this->dragged)->setPlainText(coordToStr(listPoints.at(this->dragged)->pos()));
+    coordLabels.at(this->dragged)->setPlainText(coordToStr(getFakeCoord(listPoints.at(this->dragged)->pos())));
     *(this->offsets[this->dragged]) = event->pos();
     for(int i = 0; i < this->n_points - 1; ++i){
         QPointF curF = listPoints.at(i)->scenePos();
@@ -198,8 +318,13 @@ void ImageView::mouseMoveEvent(QMouseEvent *event)
         Point newPoint = {listPoints.at(i)->scenePos().x(), listPoints.at(i)->scenePos().y()};
         startPoints.push_back(newPoint);
     }
+    vector<Point> resultInterPointStart;
     std::chrono::steady_clock::time_point beginTime = std::chrono::steady_clock::now();
-    vector<Point> resultInterPointStart = recurse(0, this->iteration, startPoints);
+    if(calcMethod == 0){
+        resultInterPointStart = recurse(0, this->iteration, startPoints);
+    }else{
+        resultInterPointStart = brute_force(this->iteration, startPoints);
+    }
     std::chrono::steady_clock::time_point endTime = std::chrono::steady_clock::now();
     for(int i = 0; i < (int)resultInterPointStart.size(); ++i){
         listInterPoints.at(i)->setPos(QPointF(resultInterPointStart[i].x, resultInterPointStart[i].y));
@@ -221,7 +346,7 @@ void ImageView::mouseMoveEvent(QMouseEvent *event)
         QLineF* l1 = new QLineF(curF.x() + r1 / 2, curF.y() + r1 / 2, curS.x() + r2 / 2, curS.y() + r2 / 2);
         interLines.at(i)->setLine(*l1);
     }
-    int dur = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - beginTime).count();
+    int dur = std::chrono::duration_cast<std::chrono::microseconds>(endTime - beginTime).count();
     emit changeTimeLabel(dur);
     emit yellUpdate(this);
 }
@@ -239,7 +364,10 @@ void ImageView::mouseDoubleClickEvent(QMouseEvent*){
     emit doubleClicked();
 }
 
-void ImageView::applyChanges(int curFocus, double posx, double posy, int numIter, int numC){
+void ImageView::applyChanges(int curFocus, double posx, double posy, int numIter, int numC, int method){
+    if(method != this->calcMethod){
+        calcMethod = method;
+    }
     if(this->iteration != numIter){
         this->iteration = numIter;
         drawInterPoints();
@@ -269,7 +397,7 @@ void ImageView::applyChanges(int curFocus, double posx, double posy, int numIter
             }else{
                 p1->setPos(hardCodedCoords.at(this->n_points));
             }
-            QGraphicsTextItem* coords = new QGraphicsTextItem(coordToStr(p1->scenePos()));
+            QGraphicsTextItem* coords = new QGraphicsTextItem(coordToStr(getFakeCoord(p1->scenePos())));
             coords->setPos(textLabelLocation(p1->scenePos()));
             this->coordLabels.append(coords);
             QFont f("Calibri", 11);
@@ -312,9 +440,9 @@ void ImageView::applyChanges(int curFocus, double posx, double posy, int numIter
         drawInterPoints();
     }
     if(curFocus < this->n_points){
-        listPoints.at(curFocus)->setPos(QPointF(posx, posy));
+        listPoints.at(curFocus)->setPos(getRealCoord(QPointF(posx, posy)));
         coordLabels.at(curFocus)->setPos(textLabelLocation(listPoints.at(curFocus)->pos()));
-        coordLabels.at(curFocus)->setPlainText(coordToStr(listPoints.at(curFocus)->pos()));
+        coordLabels.at(curFocus)->setPlainText(coordToStr(getFakeCoord(listPoints.at(curFocus)->pos())));
         *(this->offsets[curFocus]) = QPointF(posx, posy);
         drawInterPoints();
     }
@@ -339,8 +467,13 @@ void ImageView::drawInterPoints(){
         Point conv = {listPoints.at(i)->scenePos().x(), listPoints.at(i)->scenePos().y()};
         pointsNow.push_back(conv);
     }
+    vector<Point> intermPoints;
     std::chrono::steady_clock::time_point beginTime = std::chrono::steady_clock::now();
-    vector<Point> intermPoints = recurse(0, this->iteration, pointsNow);
+    if(calcMethod == 0){
+        intermPoints = recurse(0, this->iteration, pointsNow);
+    }else{
+        intermPoints = brute_force(this->iteration, pointsNow);
+    }
     std::chrono::steady_clock::time_point endTime = std::chrono::steady_clock::now();
     while(listInterPoints.count() > (long long)intermPoints.size()){
         delete listInterPoints.back();
@@ -404,7 +537,7 @@ void ImageView::drawInterPoints(){
             interLines.at(i)->setLine(*l1);
         }
     }
-    int dur = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - beginTime).count();
+    int dur = std::chrono::duration_cast<std::chrono::microseconds>(endTime - beginTime).count();
     emit changeTimeLabel(dur);
 }
 
@@ -432,7 +565,7 @@ void ImageView::resetView(){
     for(int i = 0; i < this->n_points; ++i){
         QGraphicsEllipseItem* p1 = new QGraphicsEllipseItem(0, 0, r, r);
         p1->setPos(hardCodedCoords.at(i));
-        QGraphicsTextItem* coords = new QGraphicsTextItem(coordToStr(p1->scenePos()));
+        QGraphicsTextItem* coords = new QGraphicsTextItem(coordToStr(getFakeCoord(p1->scenePos())));
         coords->setPos(textLabelLocation(p1->scenePos()));
         this->coordLabels.append(coords);
         QFont f("Calibri", 11);

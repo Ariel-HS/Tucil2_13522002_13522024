@@ -26,10 +26,10 @@
   <widget class="ControlPanel" name="widget" native="true">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>190</y>
+     <x>230</x>
+     <y>160</y>
      <width>161</width>
-     <height>191</height>
+     <height>221</height>
     </rect>
    </property>
   </widget>
@@ -88,7 +88,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>- ms</string>
+    <string>- µs</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

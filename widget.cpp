@@ -14,7 +14,7 @@ Widget::Widget(QWidget *parent)
     connect(this->ui->graphicsView, SIGNAL(doubleClicked()), this->ui->widget, SLOT(showNow()));
     connect(this->ui->graphicsView, SIGNAL(doubleClicked()), this->ui->label, SLOT(hide()));
     connect(this->ui->widget->butHide, SIGNAL(clicked()), this->ui->label, SLOT(show()));
-    connect(this->ui->widget, SIGNAL(applyChanges(int,double,double,int,int)), this->ui->graphicsView, SLOT(applyChanges(int,double,double,int,int)));
+    connect(this->ui->widget, SIGNAL(applyChanges(int,double,double,int,int,int)), this->ui->graphicsView, SLOT(applyChanges(int,double,double,int,int,int)));
     connect(this->ui->widget, SIGNAL(getCoordinateFromView(int,QPointF*&)), this->ui->graphicsView, SLOT(sendCoordinateFromView(int,QPointF*&)));
     connect(this->ui->resetButton, SIGNAL(clicked()), this->ui->graphicsView, SLOT(resetView()));
     connect(this->ui->graphicsView, SIGNAL(viewHasBeenReset(ImageView*)), this->ui->widget, SLOT(resetControlPanel(ImageView*)));
@@ -24,6 +24,7 @@ Widget::Widget(QWidget *parent)
     this->ui->widget->setStyleSheet(".ControlPanel{background-color: rgba(229, 228, 226,0.5)}");
     this->setAttribute(Qt::WA_StyledBackground, true);
     this->setStyleSheet(".Widget{background-color: rgba(255, 255, 255,1)}");
+    this->ui->graphicsView->setFrameStyle(QFrame::NoFrame);
 }
 
 Widget::~Widget()
@@ -31,11 +32,6 @@ Widget::~Widget()
     delete ui;
 }
 
-void Widget::showEvent(QShowEvent*){
-    this->ui->graphicsView->setFrameStyle(QFrame::NoFrame);
-    emit this->ui->graphicsView->yellUpdate(this->ui->graphicsView);
-}
-
 void Widget::changeTimeLabel(int x){
-    this->ui->timeLabel->setText(QString::fromStdString(std::to_string(x) + " ms"));
+    this->ui->timeLabel->setText(QString::fromStdString(std::to_string(x) + " µs"));
 }
