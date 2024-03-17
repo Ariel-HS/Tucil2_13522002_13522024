@@ -9,10 +9,10 @@ double combination(double n, double r){
     return factorial(n)/(factorial(r)*factorial(n-r));
 }
 
-Persamaan::Persamaan(vector <Point> &p): coefficients(p.size()+1) {
+Persamaan::Persamaan(vector <Point> &p): coefficients(p.size()) {
     double n = p.size();
-    for (double i=0;i<n+1;i++) {
-        coefficients[i] = combination(n,i);
+    for (double i=0;i<n;i++) {
+        coefficients[i] = combination(n-1,i);
     }
 
     points = p;
@@ -22,8 +22,8 @@ Point Persamaan::func(double t) {
     double x,y;
     Point result;
 
-    int n = coefficients.size();
-    for (int i=0;i<n;i++) {
+    double n = coefficients.size();
+    for (double i=0;i<n;i++) {
         x += coefficients[i]*pow((1-t),n-1-i)*pow(t,i)*points[i].x;
         y += coefficients[i]*pow((1-t),n-1-i)*pow(t,i)*points[i].y;
     }
@@ -34,7 +34,19 @@ Point Persamaan::func(double t) {
     return result;
 }
 
-vector <Point> brute_force(int it,vector<Point> &p) { // it = iteration
+void Persamaan::printInfo() {
+    for (auto& i:coefficients) {
+        cout << i << " ";
+    }
+    cout << endl;
+
+    for (auto& i:points) {
+        cout << "(" << i.x << "," << i.y << ") ";
+    }
+    cout << endl;
+}
+
+vector <Point> brute_force(int it,vector <Point> &p) { // it = iteration
     int n = p.size();
     double steps = 1/(pow(2,it));
     Persamaan f(p);

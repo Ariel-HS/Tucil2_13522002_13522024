@@ -20,6 +20,7 @@ double combination(double, double);
 struct Persamaan {
     Persamaan(vector <Point> &p);
     Point func(double x);
+    void printInfo();
 
     std::vector <double> coefficients;
     std::vector <Point> points;
