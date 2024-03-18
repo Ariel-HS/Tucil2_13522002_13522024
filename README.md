@@ -21,7 +21,7 @@ Kurva Bézier adalah kurva yang dibangun dengan menghubungkan beberapa titik kon
 
 ## Cara Pemakaian
 1. Download atau clone repository
-2. Pindah ke folder `\bin`
+2. Klik folder repository dan klik folder `\bin`
 3. Klik `BezierCurveApp.exe`
 
 ## Kompilasi
