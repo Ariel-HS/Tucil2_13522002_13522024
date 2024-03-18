@@ -24,7 +24,7 @@ Direktori tugas kecil ini memiliki struktur file sebagai berikut:
 ```shell
 .
 │   README.md
-├───bin                                 # Hasil compile file java (.class)
+├───bin                                 # Folder file executable
 │       BezierCurveApp.exe
 │       Qt6Core.dll
 │       ...  
