@@ -16,7 +16,7 @@ Kurva Bézier adalah kurva yang dibangun dengan menghubungkan beberapa titik kon
 ## Cara Pemakaian
 
 ## Preview
-![BezierCurveApp](./test/BezierCurveApp.gif)
+![BezierCurveApp](./test/BezierCurveApp2 (1).gif)
 
 ## Credits
 - Ariel Herfrison (NIM 13522002)
