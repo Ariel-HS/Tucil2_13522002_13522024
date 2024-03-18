@@ -1,9 +1,6 @@
 #ifndef BEZIER_H_INCLUDED
 #define BEZIER_H_INCLUDED
 
-#include <iostream>
-#include <cmath>
-
 #include <bits/stdc++.h>
 #include <vector>
 using std::vector;

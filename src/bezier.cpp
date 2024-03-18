@@ -11,7 +11,7 @@ double combination(double n, double r){
 
 Persamaan::Persamaan(vector <Point> &p): coefficients(p.size()) {
     double n = p.size();
-    for (double i=0;i<n;i++) {
+    for (int i=0;i<n;i++) {
         coefficients[i] = combination(n-1,i);
     }
 
@@ -19,11 +19,11 @@ Persamaan::Persamaan(vector <Point> &p): coefficients(p.size()) {
 }
 
 Point Persamaan::func(double t) {
-    double x,y;
+    double x = 0, y = 0;
     Point result;
 
     double n = coefficients.size();
-    for (double i=0;i<n;i++) {
+    for (int i=0;i<n;i++) {
         x += coefficients[i]*pow((1-t),n-1-i)*pow(t,i)*points[i].x;
         y += coefficients[i]*pow((1-t),n-1-i)*pow(t,i)*points[i].y;
     }
@@ -47,7 +47,6 @@ void Persamaan::printInfo() {
 }
 
 vector <Point> brute_force(int it,vector <Point> &p) { // it = iteration
-    int n = p.size();
     double steps = 1/(pow(2,it));
     Persamaan f(p);
 
@@ -88,7 +87,6 @@ Point func_recurse(double t, vector<Point> &p) {
 }
 
 vector <Point> brute_force_recurse(int it,vector<Point> &p) {
-    int n = p.size();
     double steps = 1/(pow(2,it));
 
     vector<Point> new_p;

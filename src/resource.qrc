@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>bezierAppIcon.png</file>
+    </qresource>
+</RCC>
