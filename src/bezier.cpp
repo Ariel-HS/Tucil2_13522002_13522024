@@ -61,6 +61,46 @@ vector <Point> brute_force(int it,vector <Point> &p) { // it = iteration
     return new_p;
 }
 
+Point func_recurse(double t, vector<Point> &p) {
+    int n = p.size();
+
+    if (n==1) {
+        return p[0];
+    }
+    else if (n == 2) {
+        Point new_p;
+        new_p.x = (1-t)*p[0].x+t*p[1].x;
+        new_p.y = (1-t)*p[0].y+t*p[1].y;
+        return new_p;
+    } else {
+        vector<Point> new_vector_p;
+        Point new_p;
+
+        for (int i=0;i<n-1;i++){
+            new_p.x = (1-t)*p[i].x+t*p[i+1].x;
+            new_p.y = (1-t)*p[i].y+t*p[i+1].y;
+
+            new_vector_p.push_back(new_p);
+        }
+
+        return func_recurse(t,new_vector_p);
+    }
+}
+
+vector <Point> brute_force_recurse(int it,vector<Point> &p) {
+    int n = p.size();
+    double steps = 1/(pow(2,it));
+
+    vector<Point> new_p;
+    new_p.push_back(p[0]);
+    for (int i=1;i<pow(2,it);i++){
+        new_p.push_back(func_recurse(i*steps,p));
+    }
+    new_p.push_back(p.back());
+
+    return new_p;
+}
+
 vector <Point> recurse(int it, int mIt, vector <Point> &p) {
     if(it == mIt) return {p[0], p.back()};
     vector<Point> pref, suf;

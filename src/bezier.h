@@ -28,6 +28,10 @@ struct Persamaan {
 
 vector <Point> brute_force(int it,vector<Point> &p);
 
+Point func_recurse(double t, vector<Point> &p);
+
+vector <Point> brute_force_recurse(int it,vector<Point> &p);
+
 vector <Point> recurse(int it, int mIt, vector <Point> &p);
 
 #endif // BEZIER_H_INCLUDED
