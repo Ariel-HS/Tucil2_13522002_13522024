@@ -17,7 +17,7 @@ Kurva Bézier adalah kurva yang dibangun dengan menghubungkan beberapa titik kon
 ![BezierCurveApp](./test/BezierCurveAppGIF.gif)
 
 ## Dependencies
-* Qt 6 ke atas (untuk kompilasi)
+* Qt 6 ke atas (hanya untuk kompilasi)
 
 ## Cara Pemakaian
 1. Download atau clone repository
