@@ -323,7 +323,7 @@ void ImageView::mouseMoveEvent(QMouseEvent *event)
     if(calcMethod == 0){
         resultInterPointStart = recurse(0, this->iteration, startPoints);
     }else{
-        resultInterPointStart = brute_force_recurse(this->iteration, startPoints);
+        resultInterPointStart = brute_force(this->iteration, startPoints);
     }
     std::chrono::steady_clock::time_point endTime = std::chrono::steady_clock::now();
     for(int i = 0; i < (int)resultInterPointStart.size(); ++i){
@@ -472,7 +472,7 @@ void ImageView::drawInterPoints(){
     if(calcMethod == 0){
         intermPoints = recurse(0, this->iteration, pointsNow);
     }else{
-        intermPoints = brute_force_recurse(this->iteration, pointsNow);
+        intermPoints = brute_force(this->iteration, pointsNow);
     }
     std::chrono::steady_clock::time_point endTime = std::chrono::steady_clock::now();
     while(listInterPoints.count() > (long long)intermPoints.size()){
