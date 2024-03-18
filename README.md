@@ -12,8 +12,19 @@
 Kurva Bézier adalah kurva yang dibangun dengan menghubungkan beberapa titik kontrol yang menentukan bentuk dan arah kurva. Kurva Bézier terkenal penggunaannya dalam desain grafis, animasi, dan manufaktur. Pada proyek ini, dibuat program pembentukan Kurva Bézier dengan strategi Divide and Conquer, yaitu dengan Algoritma Titik Tengah. Diimplementasikan juga Algoritma Brute Force sebagai pembanding.
 
 ## Dependencies
+* Qt 5 ke atas (untuk kompilasi)
 
 ## Cara Pemakaian
+1. Download atau clone repository
+2. Pindah ke folder `\bin`
+3. Klik `BezierCurveApp.exe`
+
+## Kompilasi
+1. Download atau clone repository
+2. Download [Qt](https://www.qt.io/download) sesuai sistem operasi
+3. Jalankan Qt Creator
+4. Pilih "Open Project" dan kemudian pilih semua file yang ada pada folder `\src`
+5. Build and Run project 
 
 ## Preview
 ![BezierCurveApp](./test/BezierCurveApp2(1).gif)
