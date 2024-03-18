@@ -4,6 +4,7 @@
 ## Table of Contents
 * [Deskripsi Singkat](#deskripsi-singkat)
 * [Preview](#preview)
+* [Deskripsi Program](#deskripsi-program)
 * [Dependencies](#dependencies)
 * [Cara Pemakaian](#cara-pemakaian)
 * [Kompilasi](#kompilasi)
@@ -15,6 +16,31 @@ Kurva Bézier adalah kurva yang dibangun dengan menghubungkan beberapa titik kon
 
 ## Preview
 ![BezierCurveApp](./test/BezierCurveAppGIF.gif)
+
+## Deskripsi Program
+Program interaktif berbasis GUI yang memvisualisasikan pembentukan kurva Bézier dengan metode divide and conquer dan brute force. Pengguna dapat menambah titik kontrol, mengubah jumlah iterasi, serta mengubah posisi titik.
+
+Direktori tugas kecil ini memiliki struktur file sebagai berikut:
+```shell
+.
+│   README.md
+├───bin                                 # Hasil compile file java (.class)
+│       BezierCurveApp.exe
+│       Qt6Core.dll
+│       ...  
+├───doc                                 # Laporan tugas kecil (dokumentasi)
+├───src                                 # Source code tugas kecil
+│       main.cpp
+│       ImageView.cpp
+│       ControlPanel.cpp
+│       widget.cpp
+│       widget.ui
+│       ...
+└───test                                # Screenshot data uji
+        BF 1.png
+        DNC 1.png
+        ...
+```
 
 ## Dependencies
 * Qt 6 ke atas (hanya untuk kompilasi)
